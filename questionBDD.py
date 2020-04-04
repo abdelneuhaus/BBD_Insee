@@ -92,8 +92,8 @@ try:
                 if(choixDepartement == x[0]):
                     print("")
                     print("Nom :", choixDepartement)
-                    cursor.execute("""SELECT cheflieu, valorga2013 valorga2009 surfarti2012 surfarti2006 agribio2016 agribio2010 granulats2014 granulats2009
-                    eolienne2015 eolienne2010 photovoltaique2015 photovoltaique2010 autreenergie2015 autreenergie2010 
+                    cursor.execute("""SELECT cheflieu, valorga2013, valorga2009, surfarti2012, surfarti2006, agribio2016, agribio2010, granulats2014,
+                    granulats2009, eolienne2015, eolienne2010, photovoltaique2015, photovoltaique2010, autreenergie2015, autreenergie2010 
                     FROM Environnement WHERE dep = '%s'; """ % choixDepartement)
                     for x in cursor.fetchall():
                         print("Chef-lieu :", x[0])
@@ -161,9 +161,8 @@ try:
     ### QUESTION 8 ###
     def faibleVMO13():
         cursor.execute("SELECT dep FROM environnement WHERE valorga2013 != -1 ORDER BY valorga2013 ASC LIMIT 1;")
-        print("Département ayant le plus faible taux de valorisation matière et organique en 2013 :")
         for x in cursor.fetchall():
-            print(x[0])
+            print("Département ayant le plus faible taux de valorisation matière et organique en 2013 :", x[0])
 
 
     ### QUESTION 9 ###
@@ -173,13 +172,13 @@ try:
     ### QUESTION 10 ###
     def pauvreteJeunesNI13():    
         cursor.execute("SELECT reg, pauvrete FROM regionsinfos WHERE jeunesnoninseres2014 > 30 AND pauvrete != - 1;")
-        print(" Taux de pauvreté en 2014 des régions dont la part des jeunes non insérés est supérieure à 30% en 2014 :")
+        print("Taux de pauvreté en 2014 des régions dont la part des jeunes non insérés est supérieure à 30% en 2014 :")
         for x in cursor.fetchall():
-            print("Département :", x[0], " - Taux de pauvreté : %.2f" % x[1],"%")
+            print(x[0], " - Taux de pauvreté : %.2f" % x[1],"%")
 
 
     ### QUESTION 11 ###
-
+    
 
 
 
