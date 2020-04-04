@@ -19,9 +19,9 @@ try:
         print("6: Affichage des départements dont la région a eu une production de granulats supérieure à 25 millions de tonnes en 2014")
         print("7: Affichage des 5 départements utilisant l'éolienne comme source majeur d'électricité")
         print("8: Affichage de la région dont le département a plus faible taux de valorisation matière/organique en 2013")
-        print("9: ")
+        print("9: Affichage de la part de l'agriculture bio du département dont le pourcentage de personnes à plus de 7 minutes des services de santé est le plus grand")
         print("10: Affichage du taux de pauvreté en 2014 dans les régions où la part de jeunes non insérés est supérieure à 30%")
-        print("11")
+        print("11: Affichage du poids de l'économie sociale dans les emplois salariés des régions dont l’énergie photovoltaïque est supérieure à 10% et dont la part de l’agriculture biologique était d’au moins 5%")
         print("")
 
 
@@ -43,19 +43,15 @@ try:
 
     ### QUESTION 3 ###
     def infosRegions():
-        nom = cursor.execute("SELECT nccenr FROM Regions;")
+        nom = cursor.execute("SELECT nccenr, cheflieu, tncc FROM Regions;")
         choixRegion = input("Choisissez une région : ")
         for x in cursor.fetchall():
             if(choixRegion == x[0]):
                 print("")
                 print("Nom :", x[0])
-                cheflieu = cursor.execute("""SELECT cheflieu FROM Regions WHERE nccenr = '%s'; """ % choixRegion)
-                for x in cursor.fetchall():
-                    print("Chef-lieu :", x[0])
-                reg = cursor.execute("""SELECT tncc FROM Regions WHERE nccenr = '%s'; """ % choixRegion)
-                for x in cursor.fetchall():
-                    print("Type de nom en clair (TNCC) :", x[0])
-                    print("")
+                print("Chef-lieu :", x[1])
+                print("Type de nom en clair (TNCC) :", x[2])
+                print("")
 
 
     ### QUESTION 4 ###
@@ -123,13 +119,13 @@ try:
         while (choix != 1 and choix != 2 and choix != 3):
             choix = int(input("Erreur de saisie. Recommencer.\n>> "))
         if(choix == 1):
-            cursor.execute("SELECT dep FROM environnement ORDER BY photovoltaique2015/photovoltaique2010 DESC;")
+            cursor.execute("SELECT dep FROM environnement ORDER BY photovoltaique2015/NULLIF(photovoltaique2010,0) DESC;")
             print("Régions dont la part d'utilisation du photovoltaïque a augmenté (ordre décroissant) :")            
             print("")
             for x in cursor.fetchall():
                 print(x[0])
         elif(choix == 2):
-            cursor.execute("SELECT dep FROM environnement ORDER BY eolienne2015 / NULLIF(eolienne2010, 0) DESC;")
+            cursor.execute("SELECT dep FROM environnement ORDER BY eolienne2015/NULLIF(eolienne2010, 0) DESC;")
             print("Régions dont la part d'utilisation de l'éolien a augmenté (ordre décroissant) :")
             print("")
             for x in cursor.fetchall():
@@ -144,11 +140,11 @@ try:
 
     ### QUESTION 6 ###
     def granulatSupe25M():
-        # Fusion du tableau
-        # select departements.nccenr from departements inner join environnement on environnement.dep = departements.nccenr;
-        # select cheflieu, SUM(granulats2014)>25000000 from environnement group by environnement.cheflieu;
-        return
-
+        cursor.execute("SELECT D1.nccenr FROM departements D1 WHERE D1.reg IN (SELECT R1.reg FROM departements D1 JOIN environnement E1 ON D1.nccenr = E1.dep JOIN regions R1 ON R1.reg = D1.reg GROUP BY R1.reg HAVING SUM(granulats2014) > 25000000);")
+        print("Liste des départements dont la région a eu une production de granulats supérieure à 25 000 000 tonnes en 2014 :")
+        for x in cursor.fetchall():
+            print(x[0])
+        
 
     ### QUESTION 7 ###
     def top5eolien():
@@ -166,7 +162,12 @@ try:
 
 
     ### QUESTION 9 ###
-
+    def agriBioSanteSup7():    
+        cursor.execute("SELECT E1.dep, agribio2016, disSanteSup7 FROM environnement E1 JOIN departementsinfos D1 ON E1.dep = D1.dep WHERE disSanteSup7 != 1 ORDER BY disSanteSup7 DESC LIMIT 1;")
+        for x in cursor.fetchall():
+            print("Département : ", x[0])
+            print("Population à plus de 7 minutes des services de sante :", x[2], "%")
+            print("Part de l'agriculture bio :", x[1], " %")
 
 
     ### QUESTION 10 ###
@@ -178,7 +179,14 @@ try:
 
 
     ### QUESTION 11 ###
+    def lastQuestion():    
+        cursor.execute("SELECT R1.nccenr, R2.poidsecosoc FROM environnement E1 JOIN departements D1 ON D1.nccenr = E1.dep JOIN regions R1 ON R1.reg = D1.reg JOIN regionsinfos R2 ON R1.nccenr = R2.reg GROUP BY R1.nccenr, R2.poidsecosoc  HAVING (SUM(E1.photovoltaique2015)/COUNT(R2.reg)) > 10 AND (SUM(E1.agribio2016)/COUNT(R2.reg)) > 5;")
+        print("Poids de l'économie sociale dans les emplois salariés de la région dont la source de la puissance électrique en énergies renouvelables provenait à au moins 10% de l’énergie photovoltaïque et dont la part de l’agriculture biologique dans la surface agricole totale était d’au moins 5% : \n")
+        for x in cursor.fetchall():
+            print(x[0], " -  Poids économique et social en 2015 : %.2f" % x[1],"%")
     
+    
+
 
 
 
@@ -186,7 +194,7 @@ try:
         menu()
         choix = int(input("Saisir un choix : "))
         print("")
-        while(choix < 0 or choix > 12):
+        while(choix < 0 or choix > 11):
             choix = int(input("Ce choix n'existe pas. Recommencer.\nChoix : "))
         if(choix == 0):
             sys.exit(0)
@@ -207,11 +215,11 @@ try:
         elif(choix == 8):
             faibleVMO13()
         elif(choix == 9):
-            pass
+            agriBioSanteSup7()
         elif(choix == 10):
             pauvreteJeunesNI13()
         elif(choix == 11):
-            pass
+            lastQuestion()
 
 
     connection.commit()

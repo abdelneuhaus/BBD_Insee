@@ -38,7 +38,7 @@ try:
         cursor.execute(query, values)
 
 
-    cursor.execute("""CREATE TABLE DepartementsInfos(cheflieu varchar(40) PRIMARY KEY, dep varchar(30), espH2015 float, espH2010 float, espF2015 float, espF2010 float, disTravailSup7 float, inondable2013 varchar(20), inondable2008 float)""")
+    cursor.execute("""CREATE TABLE DepartementsInfos(cheflieu varchar(40) PRIMARY KEY, dep varchar(30), espH2015 float, espH2010 float, espF2015 float, espF2010 float, disSanteSup7 float, inondable2013 varchar(20), inondable2008 float)""")
     data = xlrd.open_workbook("./fichiersFournis/DD-indic-reg-dep_janv2018.xls")
     reader = data.sheet_by_name("Social")
     query = """INSERT INTO DepartementsInfos VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
@@ -49,11 +49,11 @@ try:
         espH2010 = reader.cell(r,3).value
         espF2015 = reader.cell(r,4).value
         espF2010 = reader.cell(r,5).value
-        disTravailSup7 = reader.cell(r,6).value
+        disSanteSup7 = reader.cell(r,6).value
         inondable2013 = reader.cell(r,7).value
         inondable2008 = reader.cell(r,8).value
 
-        values = (cheflieu, dep, espH2015, espH2010, espF2015, espF2010, disTravailSup7, inondable2013, inondable2008)
+        values = (cheflieu, dep, espH2015, espH2010, espF2015, espF2010, disSanteSup7, inondable2013, inondable2008)
         cursor.execute(query, values)
 
 
