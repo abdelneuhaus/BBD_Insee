@@ -74,82 +74,43 @@ try:
             for x in cursor.fetchall():
                 if(choixDepartement == x[0]):
                     print("")
-                    print("Nom :", x[0])
-                    cheflieu = cursor.execute("""SELECT cheflieu FROM DepartementsInfos WHERE dep = '%s'; """ % choixDepartement)
+                    print("Nom :", choixDepartement)
+                    cursor.execute("""SELECT cheflieu, espH2015, espH2010, espF2015, espF2010, distravailsup7, inondable2013, inondable2008 
+                    FROM DepartementsInfos WHERE dep = '%s'; """ % choixDepartement)
                     for x in cursor.fetchall():
                         print("Chef-lieu :", x[0])
-                        esph2015 = cursor.execute("""SELECT espH2015 FROM DepartementsInfos WHERE dep = '%s'; """ % choixDepartement)
-                    for x in cursor.fetchall():
-                        print("Espérence de vie des hommes en 2015 :", x[0], "ans")
-                        esph2010 = cursor.execute("""SELECT espH2010 FROM DepartementsInfos WHERE dep = '%s'; """ % choixDepartement)
-                    for x in cursor.fetchall():
-                        print("Espérance de vie des hommes en 2010 :", x[0], "ans")
-                        espf2015 = cursor.execute("""SELECT espF2015 FROM DepartementsInfos WHERE dep = '%s'; """ % choixDepartement)
-                    for x in cursor.fetchall():
-                        print("Espérance de vie des femmes en 2015 :", x[0], "ans")
-                        espf2010 = cursor.execute("""SELECT espF2010 FROM DepartementsInfos WHERE dep = '%s'; """ % choixDepartement)
-                    for x in cursor.fetchall():
-                        print("Espérance de vie des femmes en 2010 :", x[0], "ans")
-                        dist7 = cursor.execute("""SELECT distravailsup7 FROM DepartementsInfos WHERE dep = '%s'; """ % choixDepartement)
-                    for x in cursor.fetchall():
-                        print("Pourcentage de personnes dont la durée pour aller au travail est supérieure à 7 minutes :", x[0], "%")
-                        inon13 = cursor.execute("""SELECT inondable2013 FROM DepartementsInfos WHERE dep = '%s'; """ % choixDepartement)
-                    for x in cursor.fetchall():
-                        print("Population en zones inondables en 2013 :", x[0], "%")
-                        espf2015 = cursor.execute("""SELECT inondable2008 FROM DepartementsInfos WHERE dep = '%s'; """ % choixDepartement)
-                    for x in cursor.fetchall():
-                        print("Population en zones inondables en 2008 :", x[0], "%")
+                        print("Espérence de vie des hommes en 2015 :", x[1], "ans")
+                        print("Espérance de vie des hommes en 2010 :", x[2], "ans")
+                        print("Espérance de vie des femmes en 2015 :", x[3], "ans")
+                        print("Espérance de vie des femmes en 2010 :", x[4], "ans")
+                        print("Pourcentage de personnes dont la durée pour aller au travail est supérieure à 7 minutes :", x[5], "%")
+                        print("Population en zones inondables en 2013 :", x[6], "%")
+                        print("Population en zones inondables en 2008 :", x[7], "%")
                         print("")
         elif(saisie == 2):
             for x in cursor.fetchall():
                 if(choixDepartement == x[0]):
                     print("")
-                    print("Nom :", x[0])
-                    cheflieu = cursor.execute("""SELECT cheflieu FROM Environnement WHERE dep = '%s'; """ % choixDepartement)
+                    print("Nom :", choixDepartement)
+                    cursor.execute("""SELECT cheflieu, valorga2013 valorga2009 surfarti2012 surfarti2006 agribio2016 agribio2010 granulats2014 granulats2009
+                    eolienne2015 eolienne2010 photovoltaique2015 photovoltaique2010 autreenergie2015 autreenergie2010 
+                    FROM Environnement WHERE dep = '%s'; """ % choixDepartement)
                     for x in cursor.fetchall():
                         print("Chef-lieu :", x[0])
-                        valorga2013 = cursor.execute("""SELECT valorga2013 FROM Environnement WHERE dep = '%s'; """ % choixDepartement)
-                    for x in cursor.fetchall():
-                        print("Taux de valorisation matière et organique :", x[0], "%")
-                        valorga2009 = cursor.execute("""SELECT valorga2009 FROM Environnement WHERE dep = '%s'; """ % choixDepartement)
-                    for x in cursor.fetchall():
-                        print("Taux de valorisation matière et organique :", x[0], "%")
-                        sur2012 = cursor.execute("""SELECT surfarti2012 FROM Environnement WHERE dep = '%s'; """ % choixDepartement)
-                    for x in cursor.fetchall():
-                        print("Surface artificelle en 2012 :", x[0], "%")
-                        sur2006 = cursor.execute("""SELECT surfarti2006 FROM Environnement WHERE dep = '%s'; """ % choixDepartement)
-                    for x in cursor.fetchall():
-                        print("Surface artificielle en 2006 :", x[0], "ans")
-                        agri2016 = cursor.execute("""SELECT agribio2016 FROM Environnement WHERE dep = '%s'; """ % choixDepartement)
-                    for x in cursor.fetchall():
-                        print("Part de l'agriculture bio en 2016 :", x[0], "%")
-                        agri2010 = cursor.execute("""SELECT agribio2010 FROM Environnement WHERE dep = '%s'; """ % choixDepartement)
-                    for x in cursor.fetchall():
-                        print("Part de l'agriculture bio en 2010 :", x[0], "%")
-                        gran2014 = cursor.execute("""SELECT granulats2014 FROM Environnement WHERE dep = '%s'; """ % choixDepartement)
-                    for x in cursor.fetchall():
-                        print("Production de granulats (tonnes) en 2014 :", x[0])
-                        gran2009 = cursor.execute("""SELECT granulats2009 FROM Environnement WHERE dep = '%s'; """ % choixDepartement)
-                    for x in cursor.fetchall():
-                        print("Production de granulats en 2009 :", x[0])
-                        eol15 = cursor.execute("""SELECT eolienne2015 FROM Environnement WHERE dep = '%s'; """ % choixDepartement)
-                    for x in cursor.fetchall():
-                        print("Eolien en 2015 :", x[0], "%")
-                        eol10 = cursor.execute("""SELECT eolienne2010 FROM Environnement WHERE dep = '%s'; """ % choixDepartement)
-                    for x in cursor.fetchall():
-                        print("Eolien en 2010:", x[0], "%")
-                        photo15 = cursor.execute("""SELECT photovoltaique2015 FROM Environnement WHERE dep = '%s'; """ % choixDepartement)
-                    for x in cursor.fetchall():
-                        print("Photovoltaique en 2015:", x[0], "%")
-                        photo10 = cursor.execute("""SELECT photovoltaique2010 FROM Environnement WHERE dep = '%s'; """ % choixDepartement)
-                    for x in cursor.fetchall():
-                        print("Photovoltaique en 2010:", x[0], "%")
-                        autre15 = cursor.execute("""SELECT autreenergie2015 FROM Environnement WHERE dep = '%s'; """ % choixDepartement)
-                    for x in cursor.fetchall():
-                        print("Autres énergies utilisées en 2015 :", x[0], "%")
-                        autre15 = cursor.execute("""SELECT autreenergie2010 FROM Environnement WHERE dep = '%s'; """ % choixDepartement)
-                    for x in cursor.fetchall():
-                        print("Autres énergies utilisées en 2010 :", x[0], "%")
+                        print("Taux de valorisation matière et organique en 2013:", x[1], "%")
+                        print("Taux de valorisation matière et organique en 2009:", x[2], "%")
+                        print("Surface artificelle en 2012 :", x[3], "%")
+                        print("Surface artificielle en 2006 :", x[4], "ans")
+                        print("Part de l'agriculture bio en 2016 :", x[5], "%")
+                        print("Part de l'agriculture bio en 2010 :", x[6], "%")
+                        print("Production de granulats (tonnes) en 2014 :", x[7])
+                        print("Production de granulats en 2009 :", x[8])
+                        print("Eolien en 2015 :", x[9], "%")
+                        print("Eolien en 2010:", x[10], "%")
+                        print("Photovoltaique en 2015:", x[11], "%")
+                        print("Photovoltaique en 2010:", x[12], "%")
+                        print("Autres énergies utilisées en 2015 :", x[13], "%")
+                        print("Autres énergies utilisées en 2010 :", x[14], "%")
                         print("")
 
 

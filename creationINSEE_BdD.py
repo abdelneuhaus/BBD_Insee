@@ -42,7 +42,7 @@ try:
     data = xlrd.open_workbook("./fichiersFournis/DD-indic-reg-dep_janv2018.xls")
     reader = data.sheet_by_name("Social")
     query = """INSERT INTO DepartementsInfos VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
-    for r in range(29,reader.nrows - 5):
+    for r in range(28,reader.nrows - 5):
         cheflieu = reader.cell(r,0).value
         dep = reader.cell(r,1).value
         espH2015 = reader.cell(r,2).value
@@ -96,4 +96,4 @@ finally:
         # fermeture pour eviter d'eventuels problemes
         cursor.close()
         connection.close()
-        print("La connexion PostgreSQL est fermée")
+        print("Terminé sans problèmes rencontrés.\nLa connexion PostgreSQL est fermée")
