@@ -62,7 +62,10 @@ try:
         print("Choisissiez un thème :")
         print("1: Social")
         print("2: Environnement")
-        saisie = int(input(">> "))
+        saisie = gestionErreurSaisie(input(">> "))
+        if saisie not in gestion_erreur:
+            print("Mauvaise saisie. Recommencer.\n>> ") 
+            choix = gestionErreurSaisie(input("Choix : ")) 
         while (saisie != 1 and saisie != 2):
             saisie = int(input("Mauvaise saisie. Recommencer.\n>> "))
         print("")
@@ -71,15 +74,15 @@ try:
                 if(choixDepartement == x[0]):
                     print("")
                     print("Nom :", choixDepartement)
-                    cursor.execute("""SELECT cheflieu, espH2015, espH2010, espF2015, espF2010, distravailsup7, inondable2013, inondable2008 
+                    cursor.execute("""SELECT cheflieu, espH2015, espH2010, espF2015, espF2010, disSanteSup7, inondable2013, inondable2008 
                     FROM DepartementsInfos WHERE dep = '%s'; """ % choixDepartement)
                     for x in cursor.fetchall():
-                        print("Chef-lieu :", x[0])
+                        print("Chef-lieu :", int(x[0]))
                         print("Espérence de vie des hommes en 2015 :", x[1], "ans")
                         print("Espérance de vie des hommes en 2010 :", x[2], "ans")
                         print("Espérance de vie des femmes en 2015 :", x[3], "ans")
                         print("Espérance de vie des femmes en 2010 :", x[4], "ans")
-                        print("Pourcentage de personnes dont la durée pour aller au travail est supérieure à 7 minutes :", x[5], "%")
+                        print("Pourcentage de personnes dont la durée pour aller aux services de santé est supérieure à 7 minutes :", x[5], "%")
                         print("Population en zones inondables en 2013 :", x[6], "%")
                         print("Population en zones inondables en 2008 :", x[7], "%")
                         print("")
@@ -92,7 +95,7 @@ try:
                     granulats2009, eolienne2015, eolienne2010, photovoltaique2015, photovoltaique2010, autreenergie2015, autreenergie2010 
                     FROM Environnement WHERE dep = '%s'; """ % choixDepartement)
                     for x in cursor.fetchall():
-                        print("Chef-lieu :", x[0])
+                        print("Chef-lieu :", int(x[0]))
                         print("Taux de valorisation matière et organique en 2013:", x[1], "%")
                         print("Taux de valorisation matière et organique en 2009:", x[2], "%")
                         print("Surface artificelle en 2012 :", x[3], "%")
@@ -114,10 +117,13 @@ try:
     def infosEnergie():
         print("Choix du type d'énergie :")
         print("1: Voltaïque\n2: Eolien\n3: Autres")
-        choix = int(input(">> "))
-        print("")
+        choix = gestionErreurSaisie(input(">> "))
+        if choix not in gestion_erreur:
+            print("Mauvaise saisie. Recommencer.\n>> ") 
+            choix = gestionErreurSaisie(input("Choix : ")) 
         while (choix != 1 and choix != 2 and choix != 3):
-            choix = int(input("Erreur de saisie. Recommencer.\n>> "))
+            choix = int(input("Mauvaise saisie. Recommencer.\n>>  "))
+        print("")
         if(choix == 1):
             cursor.execute("SELECT dep FROM environnement ORDER BY photovoltaique2015/NULLIF(photovoltaique2010,0) DESC;")
             print("Régions dont la part d'utilisation du photovoltaïque a augmenté (ordre décroissant) :")            
@@ -187,14 +193,24 @@ try:
     
     
 
+    gestion_erreur = range(0,12)
 
+    def gestionErreurSaisie(saisie):
+        try:
+            valeur=int(saisie)
+            return valeur
+        except ValueError:
+            return 0
 
 
     while(True):
         menu()
-        choix = int(input("Saisir un choix : "))
+        choix = gestionErreurSaisie(input("Choix : "))
+        while(choix not in gestion_erreur):
+            print("Il faut saisir un nombre")
+            choix = gestionErreurSaisie(input("Choix : ")) 
         print("")
-        while(choix < 0 or choix > 11):
+        while(type(choix) != int or choix < 0 or choix > 11):
             choix = int(input("Ce choix n'existe pas. Recommencer.\nChoix : "))
         if(choix == 0):
             sys.exit(0)
