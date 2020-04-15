@@ -125,23 +125,23 @@ try:
             choix = int(input("Mauvaise saisie. Recommencer.\n>>  "))
         print("")
         if(choix == 1):
-            cursor.execute("SELECT dep FROM environnement ORDER BY photovoltaique2015/NULLIF(photovoltaique2010,0) DESC;")
+            cursor.execute("SELECT dep, photovoltaique2010, photovoltaique2015 FROM environnement WHERE photovoltaique2010 < photovoltaique2015 ORDER BY photovoltaique2015 - photovoltaique2010 DESC;")
             print("Régions dont la part d'utilisation du photovoltaïque a augmenté (ordre décroissant) :")            
             print("")
             for x in cursor.fetchall():
-                print(x[0])
+                print(x[0], "- Pourcentage d'augmentation :", round(x[2] - x[1], 3), "%")
         elif(choix == 2):
-            cursor.execute("SELECT dep FROM environnement ORDER BY eolienne2015/NULLIF(eolienne2010, 0) DESC;")
+            cursor.execute("SELECT dep, eolienne2010, eolienne2015 FROM environnement WHERE eolienne2015 > eolienne2010 ORDER BY eolienne2015 - eolienne2010 DESC;")
             print("Régions dont la part d'utilisation de l'éolien a augmenté (ordre décroissant) :")
             print("")
             for x in cursor.fetchall():
-                print(x[0])
+                print(x[0], "- Part d'augmentation :", round(x[2] - x[1], 3), "%")
         elif(choix == 3):
-            cursor.execute("SELECT dep FROM environnement ORDER BY autreenergie2015/NULLIF(autreenergie2010, 0) DESC;")
+            cursor.execute("SELECT dep, autreenergie2010, autreenergie2015 FROM environnement WHERE autreenergie2015 > autreenergie2010 ORDER BY autreenergie2015 - autreenergie2010 DESC;")
             print("Régions dont la part d'utilisation d'autres énergies a augmenté (ordre décroissant) :")
             print("")
             for x in cursor.fetchall():
-                print(x[0])
+                print(x[0], "- Pourcentage d'augmentation :",round(x[2] - x[1], 3), "%")
 
 
     ### QUESTION 6 ###
@@ -154,7 +154,7 @@ try:
 
     ### QUESTION 7 ###
     def top5eolien():
-        cursor.execute("SELECT dep FROM environnement ORDER BY eolienne2015 DESC LIMIT 5;")
+        cursor.execute("SELECT dep FROM environnement WHERE eolienne2015 != 'nan' ORDER BY eolienne2015 DESC LIMIT 5;")
         print("Liste des 5 départements avec le plus grand taux d’énergie éolienne comme source de la puissance électrique en 2015 :")
         for x in cursor.fetchall():
             print(x[0])
@@ -162,14 +162,14 @@ try:
 
     ### QUESTION 8 ###
     def faibleVMO13():
-        cursor.execute("SELECT dep FROM environnement WHERE valorga2013 != -1 ORDER BY valorga2013 ASC LIMIT 1;")
+        cursor.execute("SELECT dep FROM environnement WHERE valorga2013 != 'nan' ORDER BY valorga2013 ASC LIMIT 1;")
         for x in cursor.fetchall():
             print("Département ayant le plus faible taux de valorisation matière et organique en 2013 :", x[0])
 
 
     ### QUESTION 9 ###
     def agriBioSanteSup7():    
-        cursor.execute("SELECT E1.dep, agribio2016, disSanteSup7 FROM environnement E1 JOIN departementsinfos D1 ON E1.dep = D1.dep WHERE disSanteSup7 != 1 ORDER BY disSanteSup7 DESC LIMIT 1;")
+        cursor.execute("SELECT E1.dep, agribio2016, disSanteSup7 FROM environnement E1 JOIN departementsinfos D1 ON E1.dep = D1.dep  WHERE agribio2016 != 'nan' and disSanteSup7 != 'nan' ORDER BY disSanteSup7 DESC LIMIT 1;")
         for x in cursor.fetchall():
             print("Département : ", x[0])
             print("Population à plus de 7 minutes des services de sante :", x[2], "%")
@@ -178,7 +178,7 @@ try:
 
     ### QUESTION 10 ###
     def pauvreteJeunesNI13():    
-        cursor.execute("SELECT reg, pauvrete FROM regionsinfos WHERE jeunesnoninseres2014 > 30 AND pauvrete != - 1;")
+        cursor.execute("SELECT nccenr, pauvrete FROM regionsinfos WHERE pauvrete != 'nan' and jeunesnoninseres2014 > 30;")
         print("Taux de pauvreté en 2014 des régions dont la part des jeunes non insérés est supérieure à 30% en 2014 :")
         for x in cursor.fetchall():
             print(x[0], " - Taux de pauvreté : %.2f" % x[1],"%")
@@ -186,7 +186,7 @@ try:
 
     ### QUESTION 11 ###
     def lastQuestion():    
-        cursor.execute("SELECT R1.nccenr, R2.poidsecosoc FROM environnement E1 JOIN departements D1 ON D1.nccenr = E1.dep JOIN regions R1 ON R1.reg = D1.reg JOIN regionsinfos R2 ON R1.nccenr = R2.reg GROUP BY R1.nccenr, R2.poidsecosoc  HAVING (SUM(E1.photovoltaique2015)/COUNT(R2.reg)) > 10 AND (SUM(E1.agribio2016)/COUNT(R2.reg)) > 5;")
+        cursor.execute("SELECT R1.nccenr, R2.poidsecosoc FROM environnement E1 JOIN departements D1 ON D1.nccenr = E1.dep JOIN regions R1 ON R1.reg = D1.reg JOIN regionsinfos R2 ON R1.nccenr = R2.nccenr GROUP BY R1.nccenr, R2.poidsecosoc  HAVING (SUM(E1.photovoltaique2015)/COUNT(R2.nccenr)) > 10 AND (SUM(E1.agribio2016)/COUNT(R2.nccenr)) > 5 ORDER BY R2.poidsecosoc DESC LIMIT 1;")
         print("Poids de l'économie sociale dans les emplois salariés de la région dont la source de la puissance électrique en énergies renouvelables provenait à au moins 10% de l’énergie photovoltaïque et dont la part de l’agriculture biologique dans la surface agricole totale était d’au moins 5% : \n")
         for x in cursor.fetchall():
             print(x[0], " -  Poids économique et social en 2015 : %.2f" % x[1],"%")
